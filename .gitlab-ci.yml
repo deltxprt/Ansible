@@ -1,6 +1,6 @@
 stages:
-    - test
     - dev
+    - prod
 
 #image: registry.gitlab.com/gitlab-org/terraform-images/stable:latest
 
@@ -8,8 +8,8 @@ variables:
     ANSIBLE_HOST_KEY_CHECKING: 'false'
     ANSIBLE_FORCE_COLOR: 'true'
 
-playbook_test:
-    stage: test
+playbook_dev:
+    stage: dev
     allow_failure: true
     tags:
         - dev
@@ -18,8 +18,8 @@ playbook_test:
         - whoami
         - ansible-playbook  Playbook-Test.yaml
 
-playbook_dev:
-    stage: dev
+playbook_prod:
+    stage: prod
     allow_failure: false
     tags:
         - dev
