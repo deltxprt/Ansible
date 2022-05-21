@@ -1,0 +1,27 @@
+---
+- name: Creating vm
+  hosts: localhost
+  vars:
+    api_token: !vault |
+      $ANSIBLE_VAULT;1.1;AES256
+      38616334373965356530376362623534663436343665373865643333346565343832326661373836
+      3764313839623930653363306261313139343136306539650a303338643131393561373765636265
+      35316563323730366234653435353537363562306131653665333237393065356239653433313731
+      3934633433346636650a313637353137313566313238343138326434306535316436373330633166
+      61356139633531303166653962666564663331363563393834303139336637633237393231643061
+      3665373665326130326364333839383264343231636633383837
+  tasks:
+    - name: Cloning ubuntu template with name "{{ VM_name }}" 
+      community.general.proxmox_kvm:
+        api_token_id: automation
+        api_user: "ansible@pve"
+        api_token_secret: "{{ api_token | regex_replace('\\n','') }}"
+        api_host : "alpha.internal.markaplay.net"
+        name : "{{ VM_name }}"
+        node : "alpha"
+        clone: "Ubuntu-2004-template"
+      when: Ubuntu == "true"
+    - name: debug
+      debug:
+        var: ubuntu_info
+    

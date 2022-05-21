@@ -1,0 +1,38 @@
+---
+- hosts: all
+  become: true
+  tasks:
+    - name: downloading script
+      get_url:
+        url: https://github.com/crowdsecurity/crowdsec/releases/latest/download/crowdsec-release.tgz
+        dest: /tmp/crowdsec-release.tgz
+
+    - name: fetching repos
+      unarchive:
+        src: "/tmp/crowdsec-release.tgz"
+        dest: /tmp
+        remote_src: True
+      
+    - name: setting up the repos
+      command: "sudo ./wizard.sh -i --unattended"
+      args:
+        chdir: "/tmp/crowdsec-v1.2.1"
+
+    - name: Install crowdsec
+      apt: 
+        state: present
+        name:
+        - crowdsec
+        - crowdsec-firewall-bouncer-iptables
+      when: ansible_distribution == "Ubuntu"
+
+    - name: Install crowdsec
+      dnf: 
+        state: present
+        name:
+        - crowdsec
+        - crowdsec-firewall-bouncer-iptables
+      when: ansible_distribution == "RedHat"
+    
+    - name: Configuring crowdsec
+      command: sudo cscli lapi register -u http://10.0.0.104:8080 --machine {{ ansible_hostname }}

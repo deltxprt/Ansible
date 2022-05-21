@@ -1,0 +1,298 @@
+---
+- name: Configuring Linux
+  hosts: Linux:!External
+  become: yes
+  vars:
+    ansible_become_pass: !vault | 
+      $ANSIBLE_VAULT;1.1;AES256
+      62616133393563663337613731363664373833333536643466333565636132373666353836326431
+      3731323839343663663335373132663435313463313232370a346632656562376635323666363966
+      64623731323464326137333563326430643239636333393439393861623430383435396133613034
+      3066396233336462660a643337636431623234373262356663316236373364613936343930643065
+      32653138323331313433383235356133313632636438386261633237373033663435
+    certificate: !vault |
+      $ANSIBLE_VAULT;1.1;AES256
+      33633536383866633764663931373638653161373436333838643035323432333837353335373532
+      3766316539326264376533663838343730376533623366330a316261613662323137383562396164
+      34663636623463353834323365343161313135383233363435373230383562336230643430343062
+      6536646431383630650a333864623634393761653334386230636133363061636563643234323138
+      34316438343562373639343563626239633633343530323935633832386331626165323130613132
+      33623738373232336333626163306539343333636363646563623765306132343533343763623931
+      65666431653863323537626433646266376235353861306235386139666333333365366661653334
+      34646230363264343166626135313864376366353762356137396462363234636536346466383065
+      61363630323165643030393638343737396163663538633632303535383037303732393736613536
+      64336636323631383531366234643063626233353362373361663937303835343838386664663466
+      30323937623262363531306664393565346566303861376331613966353862333032626236323933
+      65666436633936326432633561333966393337656431313732353631623032613463626234646532
+      66396335356636633866336138343438616462356634363064613961633866636164613964333132
+      33373464626535306336616330323062356138326232623635636461356433656466323734653363
+      65616631333361373265666238353965376634653561373861313734323164383139643533643438
+      64613231383465316335636130336632616465363661313664333439663337373334656231613739
+      32396462306139363038383365386337353836646562663630623637373234353130663831643338
+      61616661346665346131393134613361383638363034303761633230396239383563333237313239
+      38306539393663623038303866306634373936313637393239383339613061366438393831383934
+      34333836613930376530396231373331636561313935636237373533353561333039323934386238
+      63306137306463346166386532633337666362633730643636663638393530633434346139636466
+      61356334306430326533316331323931376637643564313531663765633330373630646164386635
+      32663061396530373365313064313238386563393033303561666133666465323636363566653932
+      37313534623633623862326361386337336231386364373637643939393130353336616464343231
+      35396532353062333836303933383966373737303666383930396663313463373437363037383963
+      38316332313666663431643333353265626565333435396638303263393937346130303130633533
+      38343362396637316165333835333662663637383534306238313235613437613362386461623539
+      61663930363863383663363035373432333136393437363638313236663266343830663031613539
+      32626635373936346237386265366639616230303338373136333037613363623564633064303233
+      39643963313062656239633434376331633965326432643035623833653166336137626133366564
+      37653636656137643734666132316636386161383530666333343031323433623738376132643235
+      61343337653462626462666238383738376138306331346136363139313265393164653965646232
+      30383065306235393965393464626431303531313133343666306337386234623261323930343262
+      6566626563616361336535353335636531656662396164626461
+  tasks:
+    - name: creating user Ubuntu
+      ansible.builtin.user:
+        name: delta
+        groups: sudo
+        append: yes
+        password: $6$mysecretsalt$m.xhFiixz9E.g9MgEpJVzF/IHI/n9P4zqZyTWz2lh2VnOptxfVbylOU8.RgydDiyyscYk70FybQy9S579DGf0/
+        state: present
+        createhome: yes
+        shell: /bin/bash
+        update_password: on_create
+      ignore_errors: yes
+      when: ansible_distribution == "Ubuntu"
+
+    
+    - name: creating user RHEL
+      ansible.builtin.user:
+        name: delta
+        groups: wheel
+        append: yes
+        password: $6$mysecretsalt$m.xhFiixz9E.g9MgEpJVzF/IHI/n9P4zqZyTWz2lh2VnOptxfVbylOU8.RgydDiyyscYk70FybQy9S579DGf0/
+        state: present
+        createhome: yes
+        shell: /bin/bash
+        update_password: on_create
+      ignore_errors: yes
+      when: ansible_distribution == "RedHat" or ansible_distribution == "Alpine"
+
+    - name: adding certificate to ssh
+      copy:
+        dest: /etc/ssh/cert_ca.pub
+        content: "{{certificate}}"
+
+    - name: adding certificate to config
+      lineinfile:
+        path: /etc/ssh/sshd_config
+        line: "TrustedUserCAKeys /etc/ssh/cert_ca.pub"
+        state: present
+      register: ssh_cert
+    
+    - name: removing password auth
+      lineinfile:
+        path: /etc/ssh/sshd_config
+        line: "PasswordAuthentication no"
+        state: present
+
+    - name: restarting ssh
+      service:
+        name: sshd
+        state: restarted
+      when: ssh_cert.changed
+
+    - name: upgrade all packages RHEL
+      yum:
+        name: '*'
+        state: latest
+      when: ansible_distribution == "RedHat"
+
+    - name: update Debian
+      apt:
+        update_cache: yes
+        upgrade: dist
+        autoremove: yes
+        autoclean: yes
+      when: ansible_distribution == "Ubuntu"
+
+    - name: update Alpine
+      apk:
+        update_cache: yes
+        upgrade: yes
+      when: ansible_distribution == "Alpine"
+
+    - name: Install Packages
+      apt: 
+        state: present
+        name:
+          - qemu-guest-agent
+          - net-tools
+          - curl
+      when: ansible_distribution == "Ubuntu"
+    
+    - name: install packages for RHEL
+      dnf:
+        state: present
+        name:
+          - qemu-guest-agent
+          - net-tools
+          - curl
+          - wget
+      ignore_errors: yes
+      when: ansible_distribution == "RedHat"
+    
+    - name: install packages for Alpine
+      apk:
+        state: present
+        name:
+          - rsyslog
+      ignore_errors: yes
+      when: ansible_distribution == "Alpine"
+
+    - name: starting QEMU guest agent
+      service:
+        name: qemu-guest-agent
+        state: started
+    
+    - name: Check if reboot required
+      stat:
+        path: /var/run/reboot-required
+      register: reboot_required_file
+
+    - name: rebooting
+      reboot:
+        delay: 10
+      when: reboot_required_file.stat.exists == true
+    
+    - name: getting token
+      uri:
+        url: http://dns.internal.markaplay.net:5380/api/login?user=admin&pass={{ dns_api_password }}
+        return_content: yes
+      register: token_id
+      ignore_errors: yes
+      when: "'New' in group_names"
+
+    - name: adding ip to dns server
+      uri:
+        url: http://dns.internal.markaplay.net:5380/api/addRecord?token={{ token_id.json.token }}&domain={{ ansible_hostname }}.internal.markaplay.net&type=A&value={{ ansible_eth0.ipv4.address }}&ptr=true&overwrite=true
+      register: dns_output
+      ignore_errors: yes
+      when: "'New' in group_names"
+
+    - name: debug output 
+      debug:
+        msg: 
+        - "status: {{ dns_output.json.status }}"
+      ignore_errors: yes
+      when: "'New' in group_names"
+
+    - name: adding config for rsyslog collector Ubuntu
+      lineinfile:
+        path: /etc/rsyslog.d/50-default.conf
+        line: "{{ item }}"
+        state: present
+      with_items: 
+        - '$PreserveFQDN on'
+        - '*.* @10.0.0.112:23000;RSYSLOG_SyslogProtocol23Format'
+        - '*.* /var/log/sshd/sshd.log'
+        - '$ActionQueueFileName queue'
+        - '$ActionQueueMaxDiskSpace 1g'
+        - '$ActionQueueSaveOnShutdown on'
+        - '$ActionQueueType LinkedList'
+        - '$ActionResumeRetryCount -1'
+      register: rsyslog_output
+      when: ansible_distribution == "Ubuntu"
+
+    - name: adding config for rsyslog collector RHEL
+      lineinfile:
+        path: /etc/rsyslog.conf
+        line: "{{ item }}"
+        state: present
+      with_items: 
+        - '$PreserveFQDN on'
+        - '*.* @10.0.0.112:23000;RSYSLOG_SyslogProtocol23Format'
+        - '*.* /var/log/sshd/sshd.log'
+        - '$ActionQueueFileName queue'
+        - '$ActionQueueMaxDiskSpace 1g'
+        - '$ActionQueueSaveOnShutdown on'
+        - '$ActionQueueType LinkedList'
+        - '$ActionResumeRetryCount -1'
+      register: rsyslog_output
+      when: ansible_distribution == "RedHat" or ansible_distribution == "Alpine"
+      
+    - name: removing old config for rsyslog collector RHEL
+      lineinfile:
+        path: /etc/rsyslog.d/50-default.conf
+        line: "{{ item }}"
+        state: absent
+      with_items: 
+        - '*.* @10.0.0.110:25000;RSYSLOG_SyslogProtocol23Format'
+      register: rsyslog_output
+      when: ansible_distribution == "Ubuntu"
+
+    - name: removing old config for rsyslog collector RHEL
+      lineinfile:
+        path: /etc/rsyslog.conf
+        line: "{{ item }}"
+        state: absent
+      with_items: 
+        - '*.* @10.0.0.110:25000;RSYSLOG_SyslogProtocol23Format'
+      register: rsyslog_output
+      when: ansible_distribution == "RedHat" or ansible_distribution == "Alpine"
+
+    - name: restartting rsyslog
+      service:
+        name: rsyslog
+        state: restarted
+      when: rsyslog_output.changed
+
+    - name: set timezone to America/Toronto
+      timezone:
+        name: America/Toronto
+      when: ansible_distribution != "Alpine"
+
+- name: Configuring Windows
+  hosts: Windows
+  tasks:
+    - name: Set up static IP address
+      win_shell: "Get-NetIpAddress -InterfaceAlias 'Ethernet' | New-NetIpAddress -IpAddress {{ windows_ipaddress }} -PrefixLength 24 -DefaultGateway 10.0.0.1"
+      async: 100 # Using "fire-and-forget" asynchronous execution for this task, otherwise it will always fail and timeout
+      poll: 0
+      when: "'New' in group_names"
+
+    - name: Change ansible's ip address for each host
+      set_fact:
+        ansible_host: "{{ windows_ipaddress }}"
+      when: "'New' in group_names"
+
+    - name: Wait for the hosts network interface to come back up
+      local_action:
+        module: wait_for
+        host: "{{ ansible_host }}"
+        port: 5985
+        delay: 10
+        state: started
+      register: wait_result
+      when: "'New' in group_names"
+
+    - name: setting dns servers ip
+      win_dns_client:
+        adapter_names: '*'
+        ipv4_addresses:
+        - 10.0.0.103
+        - 10.0.0.116
+
+    - name: Changing the hostname
+      win_hostname:
+        name: "{{ windows_hostname }}"
+      when: "'New' in group_names"
+    
+    - name: disabling depreciated features
+      win_optional_feature:
+        name: MicrosoftWindowsPowerShellV2
+        state: absent
+    
+    - name: Install all updates and reboot as many times as needed
+      win_updates:
+        category_names:
+          - SecurityUpdates
+          - CriticalUpdates
+          - UpdateRollups
+      ignore_errors: yes

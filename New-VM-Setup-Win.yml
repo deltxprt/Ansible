@@ -1,0 +1,75 @@
+---
+- hosts: all
+  remote_user: wansible
+  tasks:
+    - name: Set up static IP address
+      win_shell: "Get-NetIpAddress -InterfaceAlias 'Ethernet' | New-NetIpAddress -IpAddress {{ windows_ipaddress }} -PrefixLength 24 -DefaultGateway 10.0.0.1"
+      async: 100 # Using "fire-and-forget" asynchronous execution for this task, otherwise it will always fail and timeout
+      poll: 0
+
+    - name: Change ansible's ip address for each host
+      set_fact:
+        ansible_host: "{{ windows_ipaddress }}"
+
+    - name: Wait for the hosts network interface to come back up
+      local_action:
+        module: wait_for
+        host: "{{ ansible_host }}"
+        port: 5985
+        delay: 10
+        state: started
+      register: wait_result
+
+    - name: check if zabbix agent is already installed
+      win_service:
+        name: "zabbix agent"
+      register: zabbix_status
+
+    - name: Downloading zabbix agent
+      win_get_url:
+        url: https://cdn.zabbix.com/zabbix/binaries/stable/5.4/5.4.3/zabbix_agent-5.4.3-windows-amd64-openssl.msi
+        dest: C:\temp\zabbix.msi
+      when: zabbix_status.exists ==  false
+    
+    - name: installing zabbix agent
+      win_package:
+        path: C:\temp\zabbix.msi
+        state: present
+        log_path: C:\Automatisme\logs\zabbix-agent-{{lookup('pipe', 'date +%Y%m%dT%H%M%S')}}.log
+        arguments: SERVER=10.0.0.113 LISTENPORT=10050 SERVERACTIVE=10.0.0.113 HOSTANME=$env:computername ENABLEPATH=1 INSTALLFOLDER="C:\Program Files\Zabbix"
+      when: zabbix_status.exists ==  false
+
+    - name: remove zabbix installation file
+      win_file:
+        path: C:\temp\zabbix.msi
+        state: absent
+
+    - name: setting dns servers ip
+      win_dns_client:
+        adapter_names: Ethernet
+        ipv4_addresses:
+        - 10.0.0.200
+        - 10.0.0.201
+
+    - name: Changing the hostname
+      win_hostname:
+        name: "{{ windows_hostname }}"
+
+    - name: Joining to AD
+      win_domain_membership:
+        dns_domain_name: markaplay.local
+        hostname: "{{ ansible_hostname }}"
+        domain_admin_user: SdomainJoin@markaplay.local
+        domain_admin_password: "{{ user_ad_password }}"
+        domain_ou_path: "OU=Windows,OU=Servers,DC=markaplay,DC=local"
+        state: domain
+      register: domain_state
+
+    - name: restarting server
+      win_reboot:
+      when: domain_state.reboot_required
+    
+    - name: disabling depreciated features
+      win_optional_feature:
+        name: MicrosoftWindowsPowerShellV2
+        state: absent

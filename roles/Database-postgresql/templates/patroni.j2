@@ -1,0 +1,66 @@
+scope: postgres
+namespace: /db/
+name: {{ ansible_facts.hostname }}
+
+restapi:
+    listen: {{ ansible_facts.default_ipv4.address }}:8008
+    connect_address: {{ ansible_facts.default_ipv4.address }}:8008
+
+etcd:
+    host: 10.0.0.114:2379
+
+bootstrap:
+    dcs:
+        ttl: 30
+        loop_wait: 10
+        retry_timeout: 10
+        maximum_lag_on_failover: 1048576
+        postgresql:
+            use_pg_rewind: true
+
+    initdb:
+    - encoding: UTF8
+    - data-checksums
+
+    pg_hba:
+    - host replication replicator 127.0.0.1/32 md5
+    - host replication replicator {{ ansible_facts.default_ipv4.address }}/0 md5
+{% if ansible_facts.default_ipv4.address == "10.0.0.120" %}
+    - host replication replicator 10.0.0.121/0 md5
+    - host replication replicator 10.0.0.122/0 md5
+{% elif ansible_facts.default_ipv4.address == "10.0.0.121" %}
+    - host replication replicator 10.0.0.120/0 md5
+    - host replication replicator 10.0.0.122/0 md5
+{% elif ansible_facts.default_ipv4.address == "10.0.0.122" %}
+    - host replication replicator 10.0.0.120/0 md5
+    - host replication replicator 10.0.0.121/0 md5
+{% endif %}
+    - host all all 0.0.0.0/0 md5
+
+    users:
+        admin:
+            password: admin
+            options:
+                - createrole
+                - createdb
+
+postgresql:
+    listen: {{ ansible_facts.default_ipv4.address }}:5432
+    connect_address: {{ ansible_facts.default_ipv4.address }}:5432
+    data_dir: /data/patroni
+    pgpass: /tmp/pgpass
+    authentication:
+        replication:
+            username: replicator
+            password: password
+        superuser:
+            username: postgres
+            password: password
+    parameters:
+        unix_socket_directories: '.'
+
+tags:
+    nofailover: false
+    noloadbalance: false
+    clonefrom: false
+    nosync: false

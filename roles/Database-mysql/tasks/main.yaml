@@ -1,0 +1,38 @@
+- name: Create mysql group
+  group:
+    name: mysql
+    state: present
+- name: add delta to mysql group
+  user:
+    name: delta
+    groups: mysql
+    append: yes
+- name: install mysql
+  package:
+    name: 
+    - mysql-server
+    - mysql-client
+    state: present
+- name: start mysql server
+  service:
+    name: mysql
+    state: started
+    enabled: yes
+- name: create mysql user delta 
+  mysql_user:  
+    name: delta
+    host: "%"  
+    password: "{{ passwd_mysql_delta }}"      
+    priv: "*.*:ALL,GRANT"
+## Vault DB config
+- name: Create a new database vault
+  community.mysql.mysql_db:
+    name: vault
+    state: present
+- name: create mysql user sdbvault
+  mysql_user:  
+    name: delta
+    host: "10.0.0.112"  
+    password: "{{ passwd_mysql_sdbvault }}"      
+    priv: "vault.*:ALL"
+

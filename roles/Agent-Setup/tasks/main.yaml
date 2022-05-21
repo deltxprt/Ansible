@@ -1,0 +1,50 @@
+- name: secrets
+  include_vars: "/home/ansible/vault/tlinf-pass.pem"
+- name: fetching the keys of packages (if required)
+  apt_key:
+    url: https://repos.influxdata.com/influxdb.key
+    state: present
+  when: ansible_distribution == "Ubuntu"
+- name: adding the repository
+  shell: "echo 'deb https://repos.influxdata.com/{{ ansible_facts['distribution']|lower }} {{ ansible_facts['distribution_release'] }} stable' | sudo tee /etc/apt/sources.list.d/influxdb.list"
+  when: ansible_distribution == "Ubuntu"
+- name: updating the repository
+  apt:
+    update_cache: yes
+  when: ansible_distribution == "Ubuntu"
+- name: updating the repository
+  apk:
+    update_cache: yes
+  when: ansible_distribution == "Alpine"
+- name: installing telegraf (Ubuntu)
+  apt:
+    name: telegraf
+    state: latest
+  when: ansible_distribution == "Ubuntu"
+- name: installing telegraf (Alpine)
+  apk:
+    name: telegraf
+    state: latest
+  when: ansible_distribution == "Alpine"
+- name: adding configuration file
+  template:
+    src: /home/ansible/builds/bcFayup4/0/markaplay/Ansible/roles/Agent-Setup/template/telegraf.conf1.j2
+    dest: /etc/telegraf/telegraf.conf
+    owner: root
+    group: root
+    mode: 0644
+  when: ansible_distribution == "Ubuntu"
+- name: adding configuration file
+  template:
+    src: /home/ansible/builds/bcFayup4/0/markaplay/Ansible/roles/Agent-Setup/template/telegraf.conf1.j2
+    dest: /etc/telegraf.conf
+    owner: root
+    group: root
+    mode: 0644
+  when: ansible_distribution == "Alpine"
+- name: starting and enabling the service
+  service:
+    name: telegraf
+    enabled: yes
+    state: restarted
+  when: ansible_distribution == "Alpine" or ansible_distribution == "Ubuntu"

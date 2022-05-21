@@ -1,0 +1,133 @@
+- name: Install postgresql
+  package:
+    name: 
+    - postgresql
+    - postgresql-contrib
+    state: present
+  when: "'Databases' in group_names"
+- name: stop postgresql
+  service:
+    name: postgresql
+    state: stopped
+  when: "'Databases' in group_names"
+- name: symlink postgresql
+  shell: ln -s /usr/lib/postgresql/12/bin/* /usr/sbin/
+  ignore_errors: yes
+  when: "'Databases' in group_names"
+- name: Modify postgres config
+  lineinfile:
+    path: /etc/postgresql/12/main/postgresql.conf
+    regexp: s/^#(listen_addresses\s*=\s*)\S+/\1'*'/
+    line: listen_addresses = '*'
+  when: "'Databases' in group_names"
+- name: Install Patroni Dependencies
+  package:
+    name:
+      - python3-pip
+      - python3-dev
+      - libpq-dev
+  when: "'Databases' in group_names"
+- name: upgrade pip
+  pip:
+    name: pip
+    executable: pip3
+    state: latest
+  when: "'Databases' in group_names"
+- name: Install Patroni
+  pip:
+    name: patroni
+    executable: pip3
+    state: latest
+  when: "'Databases' in group_names"
+- name: Install Other Dependencies
+  pip:
+    name:
+      - psycopg2
+      - python-etcd
+    executable: pip3
+    state: latest
+  when: "'Databases' in group_names"
+
+## end of database setup##
+
+- name: Install ETCd
+  package:
+    name: 
+    - etcd
+    state: present
+  when: "'ETCd' in group_names"
+- name: Configrue ETCd
+  blockinfile:
+    path: /etc/default/etcd
+    block: |
+      ETCD_LISTEN_PEER_URLS="http://10.0.0.114:2380,http://127.0.0.1:7001"
+      ETCD_LISTEN_CLIENT_URLS="http://127.0.0.1:2379, http://10.0.0.114:2379"
+      ETCD_INITIAL_ADVERTISE_PEER_URLS="http://10.0.0.114:2380"
+      ETCD_INITIAL_CLUSTER="etcd0=http://10.0.0.114:2380,"
+      ETCD_ADVERTISE_CLIENT_URLS="http://10.0.0.114:2379"
+      ETCD_INITIAL_CLUSTER_TOKEN="dbcluster1"
+      ETCD_INITIAL_CLUSTER_STATE="Databases"
+  when: "'ETCd' in group_names"
+- name: Start ETCd
+  service:
+    name: etcd
+    state: restarted
+  when: "'ETCd' in group_names"
+
+##end of etcd setup##
+
+- name: Configrue Patroni
+  template:
+    src: patroni.j2
+    dest: /etc/patroni.yml
+    owner: root
+    group: root
+    mode: 0644
+  when: "'Databases' in group_names"
+- name: Creating patroni directory
+  file:
+    path: /data/patroni
+    state: directory
+    owner: postgres
+    group: postgres
+    mode: 0700
+  when: "'Databases' in group_names"
+- name: Create patroni service
+  copy:
+    src: patroni.service
+    dest: /etc/systemd/system/patroni.service
+  when: "'Databases' in group_names"
+- name: Start patroni service
+  service:
+    name: patroni
+    state: started
+    enabled: yes
+  when: "'Databases' in group_names"
+
+##end of patroni setup##
+
+- name: Install HAProxy
+  package:
+    name: 
+    - haproxy
+    state: present
+  when: "'HAProxy' in group_names"
+- name: backup HAProxy config file
+  copy:
+    src: /etc/haproxy/haproxy.cfg
+    dest: /etc/haproxy/haproxy.cfg.bak
+    remote_src: yes
+  when: "'HAProxy' in group_names"
+- name: Create HAProxy config file
+  copy:
+    src: haproxy.cfg
+    dest: /etc/haproxy/haproxy.cfg
+  when: "'HAProxy' in group_names"
+- name: Restart HAProxy service
+  service:
+    name: haproxy
+    state: restarted
+    enabled: yes
+  when: "'HAProxy' in group_names"
+
+##end of haproxy setup##

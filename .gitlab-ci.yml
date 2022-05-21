@@ -1,0 +1,29 @@
+stages:
+    - test
+    - dev
+
+#image: registry.gitlab.com/gitlab-org/terraform-images/stable:latest
+
+variables:
+    ANSIBLE_HOST_KEY_CHECKING: 'false'
+    ANSIBLE_FORCE_COLOR: 'true'
+
+playbook_test:
+    stage: test
+    allow_failure: true
+    tags:
+        - dev
+    script:
+#        - git clone git@gitlab.com:markaplay/Ansible.git --config core.sshCommand="ssh -i /home/ansible/.ssh/gitlab"
+        - whoami
+        - ansible-playbook  Playbook-Test.yaml
+
+playbook_dev:
+    stage: dev
+    allow_failure: false
+    tags:
+        - dev
+    script:
+#        - git clone git@gitlab.com:markaplay/Ansible.git --config core.sshCommand="ssh -i /home/ansible/.ssh/gitlab"
+        - whoami
+        - ansible-playbook Playbook.yaml

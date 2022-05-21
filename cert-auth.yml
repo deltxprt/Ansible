@@ -1,0 +1,25 @@
+---
+- hosts: all
+  become: true
+  tasks:
+    - name: adding certificate to ssh
+      copy:
+        dest: /etc/ssh/cert_ca.pub
+        content: "{{certificate}}"
+
+    - name: adding certificate to config
+      lineinfile:
+        path: /etc/ssh/sshd_config
+        line: "TrustedUserCAKeys /etc/ssh/cert_ca.pub"
+        state: present
+    
+    - name: removing password auth
+      lineinfile:
+        path: /etc/ssh/sshd_config
+        line: "PasswordAuthentication no"
+        state: present
+
+    - name: restarting ssh
+      service:
+        name: sshd
+        state: restarted
