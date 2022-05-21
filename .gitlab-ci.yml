@@ -9,7 +9,7 @@ variables:
     ANSIBLE_FORCE_COLOR: 'true'
 
 playbook_dev:
-    stage: dev,ansible
+    stage: dev
     allow_failure: true
     tags:
         - dev
@@ -19,7 +19,7 @@ playbook_dev:
         - ansible-playbook  Playbook-Test.yaml
 
 playbook_prod:
-    stage: prod,ansible
+    stage: prod
     allow_failure: false
     tags:
         - dev
