@@ -1,6 +1,6 @@
 stages:
-    - test
     - dev
+    - prod
 
 #image: registry.gitlab.com/gitlab-org/terraform-images/stable:latest
 
