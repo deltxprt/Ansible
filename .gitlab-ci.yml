@@ -8,8 +8,8 @@ variables:
     ANSIBLE_HOST_KEY_CHECKING: 'false'
     ANSIBLE_FORCE_COLOR: 'true'
 
-playbook_test:
-    stage: test
+playbook_dev:
+    stage: dev,ansible
     allow_failure: true
     tags:
         - dev
@@ -18,8 +18,8 @@ playbook_test:
         - whoami
         - ansible-playbook  Playbook-Test.yaml
 
-playbook_dev:
-    stage: dev
+playbook_prod:
+    stage: prod,ansible
     allow_failure: false
     tags:
         - dev
