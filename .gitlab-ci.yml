@@ -8,22 +8,22 @@ variables:
     ANSIBLE_HOST_KEY_CHECKING: 'false'
     ANSIBLE_FORCE_COLOR: 'true'
 
+before_script:
+  - whoami
+  - cp host.yml /home/ansible/host.yml
+
 playbook_dev:
     stage: dev
     allow_failure: true
     tags:
         - dev
     script:
-#        - git clone git@gitlab.com:markaplay/Ansible.git --config core.sshCommand="ssh -i /home/ansible/.ssh/gitlab"
-        - whoami
         - ansible-playbook  Playbook-Test.yaml
 
 playbook_prod:
     stage: prod
     allow_failure: false
     tags:
-        - dev
+        - prod
     script:
-#        - git clone git@gitlab.com:markaplay/Ansible.git --config core.sshCommand="ssh -i /home/ansible/.ssh/gitlab"
-        - whoami
         - ansible-playbook Playbook.yaml
