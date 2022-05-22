@@ -15,8 +15,8 @@
     - Hourly-Updates
     - role: New-Server
       when: "'New' in group_names"
-    - role: Kubernetes
-      when: "'Kubernetes' in group_names"
+#    - role: Kubernetes
+#      when: "'Kubernetes' in group_names"
 #    - role: Database-mysql
 #      when: "'Mysql' in group_names"
 
