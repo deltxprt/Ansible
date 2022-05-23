@@ -35,8 +35,9 @@ all:
                 plintif115:
                   ansible_host: 10.0.0.115
             Terraform:
-              plintif116:
-                ansible_host: 10.0.0.116
+              hosts:
+                plintif116:
+                  ansible_host: 10.0.0.116
         Databases:
           children:
             Mysql-cluster:
