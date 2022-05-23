@@ -4,8 +4,8 @@ all:
       children:
         New:
           hosts:
-            plintif116:
-              ansible_host: 10.0.0.116
+            plintws140:
+              ansible_host: 10.0.0.140
         Applications:
           children:
             test:
@@ -47,8 +47,12 @@ all:
           hosts:
             plintse130:
               ansible_host: 10.0.0.130
-#        Web:
-#          hosts:
+        Web:
+          children:
+            Uptime:
+              hosts:
+                plintws140:
+                  ansible_host: 10.0.0.140
         Kubernetes:
           children:
             Nomad:
