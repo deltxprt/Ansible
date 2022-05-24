@@ -4,8 +4,8 @@ all:
       children:
         New:
           hosts:
-            plintws140:
-              ansible_host: 10.0.0.140
+            plintws141:
+              ansible_host: 10.0.0.141
         Applications:
           children:
             test:
@@ -54,6 +54,10 @@ all:
               hosts:
                 plintws140:
                   ansible_host: 10.0.0.140
+            Status:
+              hosts:
+                plintws141:
+                  ansible_host: 10.0.0.141
         Kubernetes:
           children:
             Nomad:
