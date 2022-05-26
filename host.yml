@@ -36,6 +36,9 @@ all:
               hosts:
                 plintdb120:
                   ansible_host: 10.0.0.120
+            influx:
+              hosts:
+                plintdb121.markaplay.net:
         Security:
           hosts:
             plintse130:
