@@ -18,10 +18,6 @@ all:
               hosts:
                 plintif110:
                   ansible_host: localhost
-            FreeIpa:
-              hosts:
-                plintif111:
-                  ansible_host: 10.0.0.111
             Vault:
               hosts:
                 plintif112:
@@ -30,10 +26,6 @@ all:
               hosts:
                 plintif114:
                   ansible_host: 10.0.0.114
-            DNS:
-              hosts:
-                plintif115:
-                  ansible_host: 10.0.0.115
             Terraform:
               hosts:
                 plintif116:
@@ -54,7 +46,7 @@ all:
               hosts:
                 plintws140:
                   ansible_host: 10.0.0.140
-            Status:
+            grafana:
               hosts:
                 plintws141:
                   ansible_host: 10.0.0.141
