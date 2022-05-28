@@ -4,13 +4,16 @@ all:
       children:
         New:
           hosts:
-            plintdb121.markaplay.net:
+            plintap102.markaplay.net:
         Applications:
           children:
             test:
               hosts:
                 tlintap100:
                   ansible_host: 10.0.0.100
+            DiscordBot:
+              hosts:
+                plintap102.markaplay.net:
         Infra:
           children:
             Ansible:
