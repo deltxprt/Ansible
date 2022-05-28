@@ -4,7 +4,7 @@ all:
       children:
         New:
           hosts:
-            tlintap103.markaplay.net:
+            plintif118.markaplay.net:
         Applications:
           children:
             test:
@@ -33,6 +33,12 @@ all:
               hosts:
                 plintif116:
                   ansible_host: 10.0.0.116
+            git:
+              hosts:
+                plintif117.markaplay.net:
+            CA:
+              hosts:
+                plintif118.markaplay.net:
         Databases:
           children:
             Mysql-cluster:
