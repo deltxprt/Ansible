@@ -1,6 +1,6 @@
 ---
 - name: Running playbook Linux
-  hosts: Test
+  hosts: test
   become: yes
   gather_facts: true
   vars:
@@ -12,6 +12,7 @@
       3066396233336462660a643337636431623234373262356663316236373364613936343930643065
       32653138323331313433383235356133313632636438386261633237373033663435
   roles:
+    - CA
     - Hourly-Updates
     - role: DNS-setup
       hosts: localhost

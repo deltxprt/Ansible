@@ -1,0 +1,9 @@
+- name: add CA certificate
+  copy:
+    src: MAP_CA.crt
+    dest: /usr/local/share/ca-certificates/MAP_CA.crt
+  register: CA_status
+
+- name: update CA certificate
+  command: update-ca-certificates
+  when: CA_status.changed
