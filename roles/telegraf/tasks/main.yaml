@@ -26,7 +26,7 @@
       lineinfile:
         path: /etc/default/telegraf
         regexp: "^INFLUX_TOKEN=.*"
-        line: INFLUX_TOKEN='{{ INFLUX_TOKEN }}'
+        line: INFLUX_TOKEN="{{ INFLUX_TOKEN|replace('\n', '') }}"
         state: present
 
     - name: configuring telegraf service
