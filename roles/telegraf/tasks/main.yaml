@@ -1,4 +1,21 @@
 ---
+    - name: fetching the keys of telegraf repo
+      apt_key:
+        url: https://repos.influxdata.com/influxdb.key
+        state: present
+      when: ansible_distribution_release == "focal"
+
+    - name: adding the repository
+      apt_repository:
+        repo: deb https://repos.influxdata.com/{{ ansible_facts['distribution']|lower }} {{ ansible_facts['distribution_release'] }} stable
+        state: present
+      when: ansible_distribution_release == "focal"
+
+    - name: updating the repository
+      apt:
+        update_cache: yes
+      when: ansible_distribution_release == "focal"
+
     - name: installing telegraf
       package:
         name: telegraf
