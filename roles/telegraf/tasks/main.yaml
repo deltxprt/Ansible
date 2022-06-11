@@ -25,13 +25,14 @@
     - name: configuring telegraf variables
       lineinfile:
         path: /etc/default/telegraf
-        line: INFLUX_TOKEN={{ INFLUX_TOKEN }}
+        regexp: "^INFLUX_TOKEN=.*"
+        line: INFLUX_TOKEN="{{ INFLUX_TOKEN }}""
         state: present
 
     - name: configuring telegraf service
       lineinfile:
         path: /lib/systemd/system/telegraf.service
-        regex: "^ExecStart=.*"
+        regexp: "^ExecStart=.*"
         line: ExecStart=/usr/bin/telegraf --config http://plintdb121.markaplay.net:8086/api/v2/telegrafs/0980b7f44cc17000
         state: present
       register: Service_ischanged
