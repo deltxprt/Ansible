@@ -14,7 +14,7 @@
   roles:
     - CA
     - Hourly-Updates
-    - role: telegraf
+    - telegraf
     - role: DNS-setup
       hosts: localhost
       when: "'New' in group_names"
