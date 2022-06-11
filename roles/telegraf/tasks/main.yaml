@@ -20,6 +20,7 @@
       package:
         name: telegraf
         state: latest
+      register: install
 
     - name: configuring telegraf variables
       lineinfile:
@@ -33,12 +34,15 @@
         regex: "^ExecStart=.*"
         line: ExecStart=/usr/bin/telegraf --config http://plintdb121.markaplay.net:8086/api/v2/telegrafs/0980b7f44cc17000
         state: present
+      register: Service_ischanged
 
     - name: reloading daemon
       systemd:
         daemon_reload: yes
+      when: Service_ischanged.changed
 
     - name: restarting telegraf service
       service:
         name: telegraf
         state: restarted
+      when: Service_ischanged.changed or install.changed
