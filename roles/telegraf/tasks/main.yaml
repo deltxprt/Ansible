@@ -28,6 +28,7 @@
         regexp: "^INFLUX_TOKEN=.*"
         line: INFLUX_TOKEN={{ INFLUX_TOKEN }}
         state: present
+        create: yes
 
     - name: configuring telegraf service
       lineinfile:
