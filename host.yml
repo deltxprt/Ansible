@@ -3,8 +3,6 @@ all:
     Linux:
       children:
         New:
-          hosts:
-            plintap104.markaplay.net:
         Applications:
           children:
             test:

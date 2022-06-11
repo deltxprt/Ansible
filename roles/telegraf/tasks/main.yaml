@@ -1,0 +1,24 @@
+---
+  - name: installing telegraf
+    package:
+      - name: telegraf
+        state: latest
+  
+  - name: configuring telegraf variables
+    lineinfile:
+      path: /etc/environment
+      insertafter: "^PATH=.*"
+      line: INFLUX_TOKEN={{ INFLUX_TOKEN }}
+      state: present
+  
+  - name: configuring telegraf service
+    lineinfile:
+      path: /lib/systemd/system/telegraf.service
+      regex: "^ExecStart=.*"
+      line: ExecStart=/usr/bin/telegraf --config http://plintdb121.markaplay.net:8086/api/v2/telegrafs/0980b7f44cc17000
+      state: present
+  
+  - name: restarting telegraf service
+    service:
+      name: telegraf
+      state: restarted
