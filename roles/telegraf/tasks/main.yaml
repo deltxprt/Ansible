@@ -35,6 +35,10 @@
         line: ExecStart=/usr/bin/telegraf --config http://plintdb121.markaplay.net:8086/api/v2/telegrafs/0980b7f44cc17000
         state: present
 
+    - name: reloading daemon
+      systemd:
+        daemon_reload: yes
+
     - name: restarting telegraf service
       service:
         name: telegraf
