@@ -23,8 +23,7 @@
 
     - name: configuring telegraf variables
       lineinfile:
-        path: /etc/environment
-        insertafter: "^PATH=.*"
+        path: /etc/default/telegraf
         line: INFLUX_TOKEN={{ INFLUX_TOKEN }}
         state: present
 
