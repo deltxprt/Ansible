@@ -3,6 +3,8 @@ all:
     Linux:
       children:
         New:
+          hosts:
+            plintap105.markaplay.net:
         Applications:
           children:
             test:
@@ -16,6 +18,9 @@ all:
             Bitwarden:
               hosts:
                 plintap104.markaplay.net:
+            lancache:
+              hosts:
+                plintap105.markaplay.net:
         Infra:
           children:
             Ansible:
