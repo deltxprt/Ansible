@@ -4,7 +4,9 @@ all:
       children:
         New:
           hosts:
-            plintap105.markaplay.net:
+            plintkb150.markaplay.net:
+            plintkb151.markaplay.net:
+            plintkb152.markaplay.net:
         Applications:
           children:
             test:
