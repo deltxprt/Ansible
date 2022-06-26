@@ -70,14 +70,11 @@ all:
                   ansible_host: 10.0.0.141
         Kubernetes:
           children:
-            Nomad:
+            k3s:
               hosts:
-                plintkb154:
-                  ansible_host: 10.0.0.154
-                plintkb155:
-                  ansible_host: 10.0.0.155
-                plintkb156:
-                  ansible_host: 10.0.0.156
+                plintkb150.markaplay.net:
+                plintkb151.markaplay.net:
+                plintkb152.markaplay.net:
         External:
           hosts:
             amp:
