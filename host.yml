@@ -4,9 +4,7 @@ all:
       children:
         New:
           hosts:
-            plintkb150.markaplay.net:
-            plintkb151.markaplay.net:
-            plintkb152.markaplay.net:
+            plintif111.markaplay.net:
         Applications:
           children:
             test:
@@ -29,6 +27,9 @@ all:
               hosts:
                 plintif110:
                   ansible_host: localhost
+            Github:
+              hosts:
+                plintif111.markaplay.net:
             Vault:
               hosts:
                 plintif112:
