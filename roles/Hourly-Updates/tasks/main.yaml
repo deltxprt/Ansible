@@ -5,7 +5,7 @@
         state: latest
         autoremove: yes
         update_cache: yes
-      when: ansible_distribution == "RedHat"
+      when: ansible_os_family == "RedHat"
 
     - name: update Debian
       apt:
@@ -13,7 +13,7 @@
         upgrade: dist
         autoremove: yes
         autoclean: yes
-      when: ansible_distribution == "Ubuntu"
+      when: ansible_os_family == "Debian"
 
     - name: update Alpine
       apk:
