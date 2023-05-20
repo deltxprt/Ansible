@@ -4,8 +4,8 @@
     path: /home/{{item}}/.ssh
     state: directory
     mode: 0700
-    owner: {{item}}
-    group: {{item}}
+    owner: "{{ item }}"
+    group: "{{ item }}"
   with_items:
     - ansible
     - delta
@@ -15,8 +15,8 @@
     path: /home/{{item}}/.ssh/authorized_keys
     state: touch
     mode: 0600
-    owner: {{item}}
-    group: {{item}}
+    owner: "{{ item }}"
+    group: "{{ item }}"
   with_items:
     - ansible
     - delta
@@ -25,8 +25,8 @@
   copy:
     src: files/{{item}}.pub
     dest: /home/{{item}}/.ssh/authorized_keys
-    owner: {{item}}
-    group: {{item}}
+    owner: "{{ item }}"
+    group: "{{ item }}"
     mode: 0600
     remote_src: no
   with_items:
