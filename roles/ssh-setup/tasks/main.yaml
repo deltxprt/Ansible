@@ -7,7 +7,6 @@
     owner: "{{ item }}"
     group: "{{ item }}"
   with_items:
-    - ansible
     - delta
 
 - name: Creating authorized_keys file for {{item}}
@@ -18,7 +17,6 @@
     owner: "{{ item }}"
     group: "{{ item }}"
   with_items:
-    - ansible
     - delta
 
 - name: Adding ssh key for {{item}}
@@ -30,7 +28,6 @@
     mode: 0600
     remote_src: no
   with_items:
-    - ansible
     - delta
 
 - name: removing password auth
