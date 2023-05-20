@@ -22,7 +22,7 @@
 #      register: rsyslog_output
 #      when: ansible_distribution == "RedHat" or ansible_distribution == "Alpine"
 
-#    - name: restartting rsyslog
+#    - name: restarting rsyslog
 #      service:
 #        name: rsyslog
 #        state: restarted

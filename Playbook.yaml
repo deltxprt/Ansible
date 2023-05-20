@@ -4,6 +4,7 @@
   become: yes
   gather_facts: true
   roles:
+    - ansible-setup
     - Hourly-Updates
     - packages-setup
     - users-setup

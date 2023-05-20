@@ -1,0 +1,9 @@
+[Unit]
+Description=Ansible DSC setup
+After=network.target
+
+[Service]
+ExecStart=/usr/bin/ansible-pull -U https://github.com/deltxprt/Ansible.git Playbook.yaml --verify-commit
+
+[Install]
+WantedBy=multi-user.target

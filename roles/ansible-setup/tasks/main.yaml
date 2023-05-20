@@ -1,0 +1,28 @@
+---
+- name: setting systemd service
+  copy:
+    src: files/ansible-update.service
+    dest: /etc/systemd/system/ansible-update.service
+    owner: root
+    group: root
+    mode: 0644
+    remote_src: no
+
+- name: setting systemd timer
+  copy:
+    src: files/ansible-update.timer
+    dest: /etc/systemd/system/ansible-update.timer
+    owner: root
+    group: root
+    mode: 0644
+    remote_src: no
+
+- name: reload systemd
+  systemd:
+    daemon_reload: yes
+
+- name: enable systemd timer
+  systemd:
+    name: ansible-update.timer
+    enabled: yes
+    state: started
