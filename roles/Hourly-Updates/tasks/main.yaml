@@ -1,8 +1,10 @@
 ---
     - name: upgrade all packages RHEL
-      yum:
+      dnf:
         name: '*'
         state: latest
+        autoremove: yes
+        update_cache: yes
       when: ansible_distribution == "RedHat"
 
     - name: update Debian
@@ -19,48 +21,20 @@
         upgrade: yes
       when: ansible_distribution == "Alpine"
 
-    - name: Install Packages
-      apt: 
-        state: present
-        name:
-          - qemu-guest-agent
-          - net-tools
-          - curl
-      when: ansible_distribution == "Ubuntu"
-    
-    - name: install packages for RHEL
-      dnf:
-        state: present
-        name:
-          - qemu-guest-agent
-          - net-tools
-          - curl
-          - wget
-      ignore_errors: yes
-      when: ansible_distribution == "RedHat"
-    
-    - name: install packages for Alpine
-      apk:
-        state: present
-        name:
-          - rsyslog
-      ignore_errors: yes
-      when: ansible_distribution == "Alpine"
-
     - name: Check if reboot required
       stat:
         path: /var/run/reboot-required
       register: reboot_required_file
-      when: "'Linux' in group_names"
+      when: ansible_system == "Linux"
 
     - name: rebooting
       reboot:
         post_reboot_delay: 15
-      when: "'Linux' in group_names and reboot_required_file.stat.exists == true"
+      when: ansible_system == "Linux" and reboot_required_file.stat.exists == true
 
     - name: Install all updates and reboot as many times as needed
       win_updates:
         category_names: '*'
         reboot: yes
-      ignore_errors: yes
+      ignore_errors: true
       when: "'Windows' in group_names"

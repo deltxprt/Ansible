@@ -4,19 +4,19 @@
         url: http://dns.internal.markaplay.net:53443/api/login?user=admin&pass={{ dns_api_password }}
         return_content: yes
       register: token_id
-      ignore_errors: yes
+      ignore_errors: true
       when: "'New' in group_names"
 
     - name: adding ip to dns server
       uri:
         url: http://dns.internal.markaplay.net:53443/api/addRecord?token={{ token_id.json.token }}&domain={{ ansible_hostname }}.internal.markaplay.net&type=A&value={{ ansible_facts['default_ipv4']['address'] }}&ptr=true&overwrite=true
       register: dns_output
-      ignore_errors: yes
+      ignore_errors: true
       when: "'New' in group_names"
 
     - name: debug output 
       debug:
         msg: 
         - "status: {{ dns_output.json.status }}"
-      ignore_errors: yes
+      ignore_errors: true
       when: "'New' in group_names"

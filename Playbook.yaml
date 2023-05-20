@@ -1,42 +1,18 @@
 ---
 - name: Running playbook Linux
-  hosts: Linux:!External:!Proxmox
+  hosts: localhost
   become: yes
   gather_facts: true
-  vars:
-    ansible_become_pass: !vault | 
-      $ANSIBLE_VAULT;1.1;AES256
-      62616133393563663337613731363664373833333536643466333565636132373666353836326431
-      3731323839343663663335373132663435313463313232370a346632656562376635323666363966
-      64623731323464326137333563326430643239636333393439393861623430383435396133613034
-      3066396233336462660a643337636431623234373262356663316236373364613936343930643065
-      32653138323331313433383235356133313632636438386261633237373033663435
   roles:
-    - CA
     - Hourly-Updates
-    - telegraf
-    - role: New-Server
-      when: "'New' in group_names"
-#    - role: Kubernetes
-#      when: "'Kubernetes' in group_names"
-#    - role: Database-mysql
-#      when: "'Mysql' in group_names"
+    - New-Server
 
-- name: Running playbook Windows
-  hosts: Windows
-  gather_facts: true
-  vars:
-    ansible_become_pass: !vault | 
-      $ANSIBLE_VAULT;1.1;AES256
-      62616133393563663337613731363664373833333536643466333565636132373666353836326431
-      3731323839343663663335373132663435313463313232370a346632656562376635323666363966
-      64623731323464326137333563326430643239636333393439393861623430383435396133613034
-      3066396233336462660a643337636431623234373262356663316236373364613936343930643065
-      32653138323331313433383235356133313632636438386261633237373033663435
-  roles:
-    - Hourly-Updates
-    - role: New-Server
-      when: "'New' in group_names"
+#- name: Running playbook Windows
+#  hosts: Windows
+#  gather_facts: true
+#  roles:
+#    - Hourly-Updates
+#    - role: New-Server
 
 #- name: External hosts setup
 #  hosts: External
