@@ -3,7 +3,6 @@
       dnf:
         name: '*'
         state: latest
-        autoremove: yes
         update_cache: yes
       when: ansible_os_family == "RedHat"
 
