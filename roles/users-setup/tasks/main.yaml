@@ -22,4 +22,4 @@
     shell: /bin/bash
     update_password: on_create
   ignore_errors: true
-  when: ansible_distribution == "RedHat" or ansible_distribution == "Alpine"
+  when: ansible_os_family == "RedHat" or ansible_distribution == "Alpine"
