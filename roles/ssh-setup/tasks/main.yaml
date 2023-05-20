@@ -1,0 +1,45 @@
+---
+- name: Creating ssh folder for {{username}}
+  file:
+    path: /home/{{item}}/.ssh
+    state: directory
+    mode: 0700
+    owner: {{item}}
+    group: {{item}}
+  with_items:
+    - ansible
+    - delta
+
+- name: Creating authorized_keys file for {{item}}
+  file:
+    path: /home/{{item}}/.ssh/authorized_keys
+    state: touch
+    mode: 0600
+    owner: {{item}}
+    group: {{item}}
+  with_items:
+    - ansible
+    - delta
+
+- name: Adding ssh key for {{item}}
+  copy:
+    src: files/{{item}}.pub
+    dest: /home/{{item}}/.ssh/authorized_keys
+    owner: {{item}}
+    group: {{item}}
+    mode: 0600
+    remote_src: no
+  with_items:
+    - ansible
+    - delta
+
+- name: removing password auth
+  lineinfile:
+    path: /etc/ssh/sshd_config
+    line: "PasswordAuthentication no"
+    state: present
+
+- name: restarting ssh
+  service:
+    name: sshd
+    state: restarted

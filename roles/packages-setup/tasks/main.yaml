@@ -1,0 +1,8 @@
+- name: Install Packages
+  package:
+    state: present
+    name:
+      - qemu-guest-agent
+      - net-tools
+      - curl
+      - git

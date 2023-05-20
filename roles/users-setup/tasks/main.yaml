@@ -1,0 +1,25 @@
+- name: creating user Ubuntu
+  ansible.builtin.user:
+    name: delta
+    groups: sudo
+    append: yes
+    password: $6$mysecretsalt$m.xhFiixz9E.g9MgEpJVzF/IHI/n9P4zqZyTWz2lh2VnOptxfVbylOU8.RgydDiyyscYk70FybQy9S579DGf0/
+    state: present
+    createhome: yes
+    shell: /bin/bash
+    update_password: on_create
+  ignore_errors: true
+  when: ansible_distribution == "Ubuntu"
+
+- name: creating user RHEL/Alpine
+  ansible.builtin.user:
+    name: delta
+    groups: wheel
+    append: yes
+    password: $6$mysecretsalt$m.xhFiixz9E.g9MgEpJVzF/IHI/n9P4zqZyTWz2lh2VnOptxfVbylOU8.RgydDiyyscYk70FybQy9S579DGf0/
+    state: present
+    createhome: yes
+    shell: /bin/bash
+    update_password: on_create
+  ignore_errors: true
+  when: ansible_distribution == "RedHat" or ansible_distribution == "Alpine"

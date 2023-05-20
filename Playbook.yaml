@@ -5,7 +5,9 @@
   gather_facts: true
   roles:
     - Hourly-Updates
-    - New-Server
+    - packages-setup
+    - users-setup
+    - ssh-setup
 
 #- name: Running playbook Windows
 #  hosts: Windows
