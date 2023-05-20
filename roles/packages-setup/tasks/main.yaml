@@ -6,3 +6,15 @@
       - net-tools
       - curl
       - git
+      - gpg
+  when: ansible_virtualization_type == "kvm"
+
+- name: Install Packages
+  package:
+    state: present
+    name:
+    - net-tools
+    - curl
+    - git
+    - gpg
+  when: "lxc" in ansible_virtualization_type

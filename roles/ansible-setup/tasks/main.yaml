@@ -26,3 +26,26 @@
     name: ansible-update.timer
     enabled: yes
     state: started
+
+- name: Check if GPG key is already imported.
+  ansible.builtin.shell: gpg --list-keys --keyid-format=long | grep "ABE6828C0BC48D96"
+  register: gpg_key
+
+- name: Copy github GPG key.
+  ansible.builtin.copy:
+    src: files/github.gpg
+    dest: /tmp/github.gpg
+    mode: '0644'
+    force: true
+  when: gpg_key.rc != 0
+
+- name: Import github GPG key.
+  ansible.builtin.shell: gpg --import /tmp/github.gpg
+  when: gpg_key.rc != 0
+
+- name: Remove github GPG key.
+  ansible.builtin.file:
+    path: /tmp/github.gpg
+    state: absent
+  when: gpg_key.rc != 0
+
