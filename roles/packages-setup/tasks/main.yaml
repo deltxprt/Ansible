@@ -17,4 +17,4 @@
     - curl
     - git
     - gpg
-  when: "lxc" in ansible_virtualization_type
+  when: '"lxc" in ansible_virtualization_type'
