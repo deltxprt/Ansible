@@ -36,4 +36,4 @@
       category_names: '*'
       reboot: yes
     ignore_errors: true
-    when: "'Windows' in group_names"
+    when: ansible_system == "Windows"
