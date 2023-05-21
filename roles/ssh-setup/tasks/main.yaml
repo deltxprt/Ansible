@@ -31,10 +31,13 @@
     - delta
 
 - name: removing password auth
-  lineinfile:
-    path: /etc/ssh/sshd_config
-    line: "PasswordAuthentication no"
-    state: present
+  copy:
+    src: files/sshd_config
+    dest: /etc/ssh/sshd_config
+    owner: root
+    group: root
+    mode: 0644
+    remote_src: no
 
 - name: restarting ssh
   service:
