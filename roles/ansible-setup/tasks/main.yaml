@@ -42,7 +42,8 @@
   when: gpg_key.rc != 0
 
 - name: Import github GPG key.
-  ansible.builtin.shell: gpg --import /tmp/github.gpg
+  ansible.builtin.shell:
+    cmd: /usr/bin/gpg --import /tmp/github.gpg
   when: gpg_key.rc != 0
 
 - name: Remove github GPG key.
