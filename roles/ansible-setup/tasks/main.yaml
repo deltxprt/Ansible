@@ -50,7 +50,7 @@
   ansible.builtin.command:
     argv:
       - /usr/bin/gpg
-      - --import /tmp/github.gpg
+      - import=/tmp/github.gpg
   when: gpg_key.rc != 0
 
 - name: Remove github GPG key.
