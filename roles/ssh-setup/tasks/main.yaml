@@ -38,6 +38,7 @@
     group: root
     mode: 0644
     remote_src: no
+    backup: yes
 
 - name: restarting ssh
   service:

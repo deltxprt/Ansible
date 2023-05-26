@@ -18,3 +18,10 @@
     - git
     - gpg
   when: '"lxc" in ansible_virtualization_type'
+
+- name: Start and enable qemu-guest-agent
+  service:
+    name: qemu-guest-agent
+    state: started
+    enabled: yes
+  when: ansible_virtualization_type == "kvm"

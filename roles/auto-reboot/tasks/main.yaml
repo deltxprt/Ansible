@@ -1,0 +1,4 @@
+---
+- name: auto-reboot if uptime is > 7 days
+  reboot:
+  when: ansible_uptime_seconds > 10080

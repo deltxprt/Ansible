@@ -9,6 +9,7 @@
     - packages-setup
     - users-setup
     - ssh-setup
+    - auto-reboot
 
 #- name: Running playbook Windows
 #  hosts: Windows
