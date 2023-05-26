@@ -50,5 +50,4 @@
   ansible.builtin.file:
     path: /tmp/github.gpg
     state: absent
-  when: gpg_key.rc != 0
 
