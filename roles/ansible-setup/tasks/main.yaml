@@ -28,8 +28,8 @@
     state: started
 
 - name: Check if GPG key is already imported.
-  ansible.builtin.command:
-    cmd: "/usr/bin/gpg --list-keys --keyid-format=long | grep 'ABE6828C0BC48D96'"
+  ansible.builtin.shell:
+    args: "/usr/bin/gpg --list-keys --keyid-format=long | grep 'ABE6828C0BC48D96'"
   register: gpg_key
 
 - name: Copy github GPG key.
@@ -42,7 +42,7 @@
 
 - name: Import github GPG key.
   ansible.builtin.shell:
-    cmd: "/usr/bin/gpg --import=/tmp/github.gpg"
+    args: "/usr/bin/gpg --import=/tmp/github.gpg"
   when: gpg_key.rc != 0
 
 - name: Remove github GPG key.
