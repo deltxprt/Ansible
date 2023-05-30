@@ -1,4 +1,16 @@
 ---
-- name: auto-reboot if uptime is > 7 days
-  reboot:
-  when: ansible_uptime_seconds > 10080
+- name: copy reboot timer
+  copy:
+    src: files/weekly-reboot.timer
+    dest: /etc/systemd/system/weekly-reboot.timer
+    owner: root
+    group: root
+    mode: 0644
+    remote_src: no
+
+- name: enable reboot timer
+  systemd:
+    name: weekly-reboot.timer
+    enabled: yes
+    state: started
+
