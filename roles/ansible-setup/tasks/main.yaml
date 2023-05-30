@@ -44,11 +44,15 @@
     dest: /tmp/github.gpg
     mode: '0644'
     force: true
-  when: gpg_key.rc != 0 && gpg_present.stat.exists == true
+  when: 
+    - gpg_key.rc != 0
+    - gpg_present.stat.exists == true
 
 - name: Import github GPG key.
   ansible.builtin.command: /usr/bin/gpg --import=/tmp/github.gpg
-  when: gpg_key.rc != 0 && gpg_present.stat.exists == true
+  when: 
+    - gpg_key.rc != 0
+    - gpg_present.stat.exists == true
 
 - name: Remove github GPG key.
   ansible.builtin.file:
