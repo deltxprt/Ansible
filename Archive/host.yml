@@ -1,0 +1,110 @@
+all:
+  children:
+    Linux:
+      children:
+        New:
+          hosts:
+            plintif111.markaplay.net:
+        Applications:
+          children:
+            test:
+              hosts:
+                tlintap100:
+                  ansible_host: 10.0.0.100
+            DiscordBot:
+              hosts:
+                plintap102.markaplay.net:
+                tlintap103.markaplay.net:
+            Bitwarden:
+              hosts:
+                plintap104.markaplay.net:
+            lancache:
+              hosts:
+                plintap105.markaplay.net:
+        Infra:
+          children:
+            Ansible:
+              hosts:
+                plintif110:
+                  ansible_host: localhost
+            Github:
+              hosts:
+                plintif111.markaplay.net:
+            Vault:
+              hosts:
+                plintif112:
+                  ansible_host: 10.0.0.112
+            Gateway:
+              hosts:
+                plintif114:
+                  ansible_host: 10.0.0.114
+            Terraform:
+              hosts:
+                plintif116:
+                  ansible_host: 10.0.0.116
+            git:
+              hosts:
+                plintif117.markaplay.net:
+            CA:
+              hosts:
+                plintif118.markaplay.net:
+        Databases:
+          children:
+            Mysql-cluster:
+              hosts:
+                plintdb120:
+                  ansible_host: 10.0.0.120
+            influx:
+              hosts:
+                plintdb121.markaplay.net:
+        Security:
+          hosts:
+            plintse130:
+              ansible_host: 10.0.0.130
+        Web:
+          children:
+            Uptime:
+              hosts:
+                plintws140:
+                  ansible_host: 10.0.0.140
+            grafana:
+              hosts:
+                plintws141:
+                  ansible_host: 10.0.0.141
+        Kubernetes:
+          children:
+            k3s:
+              hosts:
+                plintkb150.markaplay.net:
+                plintkb151.markaplay.net:
+                plintkb152.markaplay.net:
+        External:
+          hosts:
+            amp:
+              ansible_host: amp.markaplay.net
+            apollo2:
+              ansible_host: apollo2.markaplay.net
+            auth:
+              ansible_host: auth.markaplay.net
+      vars:
+        ansible_python_interpreter: /usr/bin/python3
+
+    Proxmox:
+      children:
+        External:
+          hosts:
+            apollo1:
+              ansible_host: apollo1.markaplay.net
+        Internal:  
+          hosts:
+            alpha:
+              ansible_host: 10.0.0.5
+            bravo:
+              ansible_host: 10.0.0.6
+            charlie:
+              ansible_host: 10.0.0.7
+      vars:
+        ansible_python_interpreter: /usr/bin/python3
+
+#    Windows:
+#      hosts:

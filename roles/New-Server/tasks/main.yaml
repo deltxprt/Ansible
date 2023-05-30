@@ -2,7 +2,7 @@
 #Rsyslog setup
 #    - name: adding config for rsyslog collector Ubuntu
 #      copy:
-#        src: /home/ansible/builds/bcFayup4/0/markaplay/Ansible/roles/New-Server/files/rsyslog.conf
+#        src: /home/ansible/builds/bcFayup4/0/markaplay/Ansible/roles/New-Server/files/rsyslog.conf.j2
 #        dest: /etc/rsyslog.d/50-default.conf
 #        owner: root
 #        group: root
@@ -13,8 +13,8 @@
 
 #    - name: adding config for rsyslog collector RHEL
 #      copy:
-#        src: /home/ansible/builds/bcFayup4/0/markaplay/Ansible/roles/New-Server/files/rsyslog.conf
-#        dest: /etc/rsyslog.conf
+#        src: /home/ansible/builds/bcFayup4/0/markaplay/Ansible/roles/New-Server/files/rsyslog.conf.j2
+#        dest: /etc/rsyslog.conf.j2
 #        owner: root
 #        group: root
 #        mode: 0644

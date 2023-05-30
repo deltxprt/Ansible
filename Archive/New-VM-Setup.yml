@@ -202,7 +202,7 @@
 
     - name: adding config for rsyslog collector RHEL
       lineinfile:
-        path: /etc/rsyslog.conf
+        path: /etc/rsyslog.conf.j2
         line: "{{ item }}"
         state: present
       with_items: 
@@ -229,7 +229,7 @@
 
     - name: removing old config for rsyslog collector RHEL
       lineinfile:
-        path: /etc/rsyslog.conf
+        path: /etc/rsyslog.conf.j2
         line: "{{ item }}"
         state: absent
       with_items: 

@@ -2,22 +2,18 @@
   package:
     state: present
     name:
-      - qemu-guest-agent
       - net-tools
       - curl
       - git
       - gpg
-  when: ansible_virtualization_type == "kvm"
 
-- name: Install Packages
+- name: required package for proxmox vms
   package:
     state: present
     name:
-    - net-tools
-    - curl
-    - git
-    - gpg
-  when: '"lxc" in ansible_virtualization_type'
+      - qemu-guest-agent
+  when: ansible_virtualization_type == "kvm"
+  
 
 - name: Start and enable qemu-guest-agent
   service:

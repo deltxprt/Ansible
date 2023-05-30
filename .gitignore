@@ -1,3 +1,4 @@
 ExcludesFiles/*
 /.idea/
 Ansible.iml
+**/.vscode/**
