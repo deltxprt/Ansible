@@ -49,7 +49,7 @@
     - gpg_present.stat.exists == true
 
 - name: Import github GPG key.
-  ansible.builtin.command: /usr/bin/gpg --import=/tmp/github.gpg
+  ansible.builtin.command: /usr/bin/gpg --import '/tmp/github.gpg'
   when: 
     - gpg_key.rc != 0
     - gpg_present.stat.exists == true
