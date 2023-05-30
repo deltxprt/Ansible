@@ -27,11 +27,17 @@
     enabled: yes
     state: started
 
+- name: check if gpg is present
+  stat:
+    path: /usr/bin/gpg
+  register: gpg_present
+
 - name: Check if GPG key is already imported.
   ansible.builtin.shell:
     argv: "/usr/bin/gpg --list-keys --keyid-format=long | grep 'ABE6828C0BC48D96'"
   ignore_errors: true
   register: gpg_key
+  when: gpg_present.stat.exists == true
 
 - name: Copy github GPG key.
   ansible.builtin.copy:
@@ -39,12 +45,12 @@
     dest: /tmp/github.gpg
     mode: '0644'
     force: true
-  when: gpg_key.rc != 0
+  when: gpg_key.rc != 0 && gpg_present.stat.exists == true
 
 - name: Import github GPG key.
   ansible.builtin.shell:
     argv: "/usr/bin/gpg --import=/tmp/github.gpg"
-  when: gpg_key.rc != 0
+  when: gpg_key.rc != 0 && gpg_present.stat.exists == true
 
 - name: Remove github GPG key.
   ansible.builtin.file:
