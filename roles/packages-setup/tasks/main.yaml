@@ -6,6 +6,7 @@
       - curl
       - git
       - gpg
+      - rsyslog
 
 - name: required package for proxmox vms
   package:

@@ -1,0 +1,29 @@
+---
+#Rsyslog setup
+- name: adding config for rsyslog collector Ubuntu
+  copy:
+    src: files/rsyslog.conf.j2
+    dest: /etc/rsyslog.d/50-default.conf
+    owner: root
+    group: root
+    mode: 0644
+    remote_src: no
+  register: rsyslog_output
+  when: ansible_distribution == "Ubuntu"
+
+- name: adding config for rsyslog collector RHEL/Alpine
+  copy:
+    src: files/rsyslog.conf.j2
+    dest: /etc/rsyslog.conf.j2
+    owner: root
+    group: root
+    mode: 0644
+    remote_src: no
+  register: rsyslog_output
+  when: ansible_distribution == "RedHat" or ansible_distribution == "Alpine"
+
+- name: restarting rsyslog
+  service:
+    name: rsyslog
+    state: restarted
+  when: rsyslog_output.changed

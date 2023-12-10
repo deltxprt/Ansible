@@ -8,6 +8,10 @@
     mode: 0644
     remote_src: no
 
+- name: Daemon Reload
+  systemd:
+    daemon_reload: yes
+
 - name: enable reboot timer
   systemd:
     name: weekly-reboot.timer
